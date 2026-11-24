@@ -1,0 +1,27 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PostList from '../../components/PostList.astro';
+import { getCollection } from 'astro:content';
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort((a,b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+<Layout title="Blog" description="학습, 작업 과정, 문제 해결과 생각을 기록하는 공간.">
+  <header class="page-heading"><p class="eyebrow">NOTES & REFLECTIONS</p><h1>Blog<span class="accent">.</span></h1><p>배운 것, 시도한 것, 다음에 풀어 볼 질문.</p></header>
+  {posts.length ? <>
+    <div class="blog-toolbar"><label for="post-search">글 검색</label><input id="post-search" type="search" placeholder="제목, 내용 요약 또는 태그로 찾기" /><p id="search-status" role="status" aria-live="polite">{posts.length}개의 글</p></div>
+    <PostList posts={posts} />
+    <p id="no-results" class="search-empty" hidden>검색 결과가 없습니다. 다른 검색어를 입력해 주세요.</p>
+  </> : <div class="empty-state"><span class="empty-symbol" aria-hidden="true">[ ]</span><div><h2>아직 공개한 글이 없습니다.</h2><p>첫 번째 글이 발행되면 이곳에 표시됩니다.</p></div></div>}
+</Layout>
+<script>
+  const input = document.querySelector<HTMLInputElement>('#post-search');
+  const posts = Array.from(document.querySelectorAll<HTMLElement>('[data-post]'));
+  input?.addEventListener('input', () => {
+    const words = input.value.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+    let count = 0;
+    for (const post of posts) { const matches = words.every(word => post.dataset.search?.includes(word)); post.hidden = !matches; if(matches) count++; }
+    const status = document.querySelector('#search-status');
+    if(status) status.textContent = `${count}개의 글`;
+    const empty = document.querySelector<HTMLElement>('#no-results');
+    if(empty) empty.hidden = count !== 0;
+  });
+</script>

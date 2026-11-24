@@ -1,0 +1,17 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+export async function getStaticPaths() {
+  return (await getCollection('blog', ({ data }) => !data.draft)).map(post => ({ params: { slug: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+<Layout title={post.data.title} description={post.data.description} article>
+  <article class="blog-article">
+    <header class="article-heading"><a class="back-link" href="/blog/">글 목록</a><p class="eyebrow">{post.data.category}</p><h1>{post.data.title}</h1><p class="article-description">{post.data.description}</p><div class="post-meta"><time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', timeZone:'Asia/Seoul' })}</time>{post.data.updatedDate && <span>수정 {post.data.updatedDate.toLocaleDateString('ko-KR', {timeZone: 'Asia/Seoul'})}</span>}</div>{post.data.tags.length > 0 && <div class="tags">{post.data.tags.map(tag => <span>#{tag}</span>)}</div>}</header>
+    <div class="prose"><Content /></div>
+    {post.data.relatedRepo && <aside class="related-repo"><h2>관련 코드</h2><a href={post.data.relatedRepo}>{post.data.relatedRepo}</a></aside>}
+    <div class="article-end"><a class="text-link" href="/blog/">모든 글 보기</a></div>
+  </article>
+</Layout>

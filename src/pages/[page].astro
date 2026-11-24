@@ -1,0 +1,13 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+export async function getStaticPaths() {
+  return (await getCollection('pages')).map(page => ({ params: { page: page.id }, props: { page } }));
+}
+const { page } = Astro.props;
+const { Content } = await render(page);
+---
+<Layout title={page.data.title} description={page.data.description}>
+  <header class="page-heading"><p class="eyebrow">JooREC0 / {page.data.title.toUpperCase()}</p><h1>{page.data.title}<span class="accent">.</span></h1><p>{page.data.description}</p></header>
+  <article class="prose content-page"><Content /></article>
+</Layout>
