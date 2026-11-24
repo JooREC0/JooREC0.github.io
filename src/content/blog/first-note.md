@@ -1,9 +1,11 @@
 ---
-title: 첫 번째 기록
-description: 첫 글 작성을 위한 초안입니다. 내용을 채운 뒤 발행하세요.
+title: 테스트
+description: 테스트
 pubDate: 2026-11-24
+updatedDate: ''
 category: Learning Notes
 tags: []
+relatedRepo: ''
 draft: true
 ---
 
